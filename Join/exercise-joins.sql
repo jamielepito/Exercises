@@ -44,19 +44,44 @@ where last_name like 'W%';
 -- Join item and category. Select the item name and category name.
 -- Expected: 19 Rows
 
+select 
+	i.`name` item_name,
+	cat.`name` category_name
+from item i
+left outer join category cat on i.category_id = cat.category_id;
+
 -- Join item and category. Select the item name and category name.
 -- Create an alias for each column: item_name and category_name
 -- Sort by the category_name, then item_name.
 -- Expected: 19 Rows
+
+select
+	i.name item_name,
+    cat.name category_name
+from item i
+inner join category cat on i.category_id = cat.category_id
+order by category_name, item_name;
 
 -- Select name and price_per_unit from item,
 -- name from unit. Make rows from both tables required.
 -- Add column aliases to avoid confusion from two `name` columns.
 -- Expected: 19 Rows
 
+select 
+	i.name item_name,
+    i.price_per_unit,
+    u.name unit_name
+from item i
+inner join unit u on i.unit_id = u.unit_id;
+
 -- Select all columns from item, category, and unit.
 -- Make all rows required.
 -- Expected: 19 Rows
+
+select *
+from item i 
+left outer join category cat on i.category_id = cat.category_id
+left outer join unit u on i.unit_id = u.unit_id;
 
 -- Select first_name, last_name from customer,
 -- select description from project,
@@ -65,28 +90,77 @@ where last_name like 'W%';
 -- (Hint: left outer join)
 -- Expected: 228 Rows
 
+select
+	c.first_name,
+    c.last_name,
+    p.description
+from customer c
+left outer join project p on c.customer_id = p.customer_id
+where c.last_name like 'B%' or c.last_name like 'D%';
+
 -- Find all customers who do not have a project.
 -- Expected: 195 Rows
+
+select *
+from customer c
+left outer join project p on c.customer_id = p.customer_id
+where p.project_id is null;
 
 -- Find all customers who do not have a login.
 -- Expected: 341 Rows
 
+select *
+from customer c
+left outer join login l on c.customer_id = l.customer_id
+where l.user_name is null;
+
 -- Find all employees who are not assigned to a project.
 -- Expected: 0 Rows
+
+select *
+from employee e
+left outer join project_employee pe on e.employee_id = pe.employee_id
+where pe.employee_id is null;
 
 -- Select employee_id, first_name, and last_name from employee,
 -- project_id and description from project
 -- where the employee last_name equals `Gravel`.
 -- Expected: 958 Rows
 
+select
+	e.employee_id,
+    e.first_name, 
+    e.last_name,
+    p.project_id,
+    p.description
+from employee e 
+left outer join project_employee pe on e.employee_id = pe.employee_id
+left outer join project p on pe.project_id = p.project_id
+where e.last_name = 'Gravel';
+
 -- Which employees worked on a project for the customer
 -- with last_name equal to 'Rao'?
 -- Expected: Itch Gravel, Alang Durt, Ynez Durt, Ddene Soyle,
 -- Mychal Soyle, Hugo Durt
 
+select *
+from employee e
+inner join project_employee pe on e.employee_id = pe.employee_id
+inner join project p on pe.project_id = p.project_id
+inner join customer c on p.customer_id = c.customer_id
+where c.last_name = 'Rao';
+
 -- Find employees and projects for projects in 2017.
 -- Select project_id from project and names from employee.
 -- Expected: 410 Rows
+
+select
+	p.project_id,
+    concat(e.first_name, " ", e.last_name) employee_name
+from project p
+left outer join project_employee pe on p.project_id = pe.project_id
+left outer join employee e on pe.employee_id = e.employee_id
+where year(p.start_date) = 2017;
 
 -- Create an "invoice" with line item totals (calculated field)
 -- for items billed to projects for the customer with last_name 'Stelfox'.
