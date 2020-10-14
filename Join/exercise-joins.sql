@@ -172,11 +172,31 @@ where year(p.start_date) = 2017;
 -- Lanie Stelfox 481 Class 5 Gravel    624.000000
 -- Lanie Stelfox 481 Wall Stone        3452.100000
 
+select 
+	concat(c.first_name, " ", c.last_name) customer_name,
+    p.project_id,
+    i.name item_name,
+	i.price_per_unit * pi.quantity
+from customer c
+inner join project p on c.customer_id = p.customer_id
+inner join project_item pi on p.project_id = pi.project_id
+inner join item i on pi.item_id = i.item_id
+where c.last_name = 'Stelfox';
+
 -- Determine which customers employee Fleur Soyle worked for in
 -- the 'M3H' postal_code. All customers in the postal_code should be included
 -- regardless of if they have a project or Fleur worked on it.
 -- Though something should indicate if Fleur was on a M3H project.
 -- Expected: 48 Rows, 3 projects that Fleur worked on.
+
+select *
+from customer c
+inner join project p  on c.customer_id = p.customer_id
+inner join project_employee pe on p.project_id = pe.project_id
+inner join employee e on pe.employee_id = e.employee_id
+where c.postal_code = 'M3H'
+order by c.first_name;
+	-- and concat(e.first_name, " ", e.last_name) = 'Fleur Soyle';
 
 -- Find customers without logins using a `right outer` join.
 -- Expected: 341 Rows
