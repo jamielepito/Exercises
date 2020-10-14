@@ -165,16 +165,39 @@ where description like '%Gabion%';
 -- What is the largest quantity's project_id and item_id?
 -- Expected: project_id 1078, item_id 2, quantity 132.00
 
+select *
+from project_item
+order by quantity desc;
+
 -- Select a calculated field, full_name, from customer by
 -- concatenating the customer's first_name and last_name
 -- where the city equals 'Rayside-Balfour'.
 -- Expected 9 Rows, 1 column.
+
+select
+	concat(first_name, " ", last_name) full_name
+from customer
+where city = 'Rayside-Balfour';
 
 -- Select item_id, name, and price_per_unit for items 
 -- that are measured by cubic yards (unit_id = 2)
 -- and have a price_per_unit greater than $50.
 -- Expected: 8 Rows, 3 columns
 
+select 
+	item_id,
+    name,
+    price_per_unit
+from item
+where unit_id = 2
+	and price_per_unit > 50.0;
+
+select 
+	item_id,
+    name,
+    price_per_unit
+from item
+where unit_id = 2;
 
 -- The next two tasks require multiple queries to solve.
 -- Use the results of one query to write the next query.
@@ -184,19 +207,44 @@ where description like '%Gabion%';
 -- Step 1: select the customer_id from customer for Mina Ellett.
 -- Expected: 1 Row
 
+select customer_id
+from customer
+where first_name = 'Mina'
+	and last_name = 'Ellett';
+
 -- Step 2: use the customer_id to find a record in the login table.
 -- Expected: 0 Rows (no login)
 
+select *
+from login
+where customer_id = 518;
 
 -- Which employees work on projects for customer Tadeo Divine?
 -- Step 1: find Tadeo Divine's customer_id
 -- Expected: 1 Row
 
+select customer_id
+from customer
+where first_name = 'Tadeo'
+	and last_name = 'Divine';
+
 -- Step 2: use their customer_id to find their records in the project table.
 -- Expected: 1 Row
+
+select *
+from project
+where customer_id = 854;
 
 -- Step 3: use the project_id from project to find records in project_employee
 -- Expected: 4 Rows
 
+select *
+from project_employee
+where project_id = 182;
+
 -- Step 4: use the employee_ids from project_employee to find records in employee
 -- Expected: 4 Rows
+
+select *
+from employee
+where employee_id in (9, 15, 22, 23);
