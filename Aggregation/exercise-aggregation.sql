@@ -130,14 +130,45 @@ group by pi.project_id;
 -- What's the most expensive project in the 'M3H' postal_code?
 -- Expected: 18828.00
 
+select
+	pi.project_id,
+    sum(pi.quantity * i.price_per_unit) total_cost
+from project_item pi
+inner join item i on pi.item_id = i.item_id
+inner join project p on pi.project_id = p.project_id
+inner join customer c on p.customer_id = c.customer_id
+where c.postal_code = 'M3H'
+group by pi.project_id
+order by total_cost desc limit 1;
+
 -- How many projects did each employee work on?
 -- Expected: 33 Rows
+
+select
+	employee_id,
+    count(project_id)
+from project_employee
+group by employee_id;
 
 -- How many employees worked on more than 140 projects?
 -- Expected: 10 Rows
 
+select
+	employee_id,
+    count(project_id) `count`
+from project_employee
+group by employee_id
+having `count` > 140;
+
 -- How many projects cost more than $20,000?
 -- Expected: 55 Rows
+
+select
+    sum(pi.quantity * i.price_per_unit) total_cost
+from project_item pi
+inner join item i on pi.item_id = i.item_id
+group by pi.project_id
+having total_cost > 20000;
 
 -- Across all projects, what are the total costs per item?
 -- Select the item name and sum.
