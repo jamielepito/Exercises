@@ -189,21 +189,37 @@ where c.last_name = 'Stelfox';
 -- Though something should indicate if Fleur was on a M3H project.
 -- Expected: 48 Rows, 3 projects that Fleur worked on.
 
-select *
+select 
+	concat(c.first_name, " ", c.last_name) cust_name,
+    c.postal_code,
+    concat(e.first_name, " ", e.last_name) emp_name
 from customer c
-inner join project p  on c.customer_id = p.customer_id
-inner join project_employee pe on p.project_id = pe.project_id
-inner join employee e on pe.employee_id = e.employee_id
-where c.postal_code = 'M3H'
+left outer join project p  on c.customer_id = p.customer_id
+left outer join project_employee pe on p.project_id = pe.project_id
+left outer join employee e on pe.employee_id = e.employee_id
+where c.postal_code = 'M3H' -- and concat(e.first_name, " ", e.last_name) = 'Fleur Soyle'
 order by c.first_name;
 	-- and concat(e.first_name, " ", e.last_name) = 'Fleur Soyle';
 
 -- Find customers without logins using a `right outer` join.
 -- Expected: 341 Rows
 
+select
+    c.customer_id,
+    c.first_name,
+    c.last_name  
+from customer c
+left outer join login l on l.customer_id = c.customer_id
+where l.customer_id is null;
+
 -- List category with its parent category, but make the parent category
 -- optional to include categories without a parent.
 -- Expected: 8 Rows
+
+select 
+	c.category_id,
+    c.parent_category_id
+from category c;
 
 -- Write an "everything" query:
 -- customer_id and names from customer
@@ -214,3 +230,19 @@ order by c.first_name;
 -- name from unit
 -- for customers in the 'L3K' postal_code.
 -- Expected: 39 Rows
+
+select
+	c.customer_id,
+    concat(c.first_name, " ", c.last_name) cust_name,
+    p.description,
+    pi.quantity,
+    i.name,
+    cat.name,
+    u.name
+from customer c
+ join project p on c.customer_id = p.customer_id
+left outer join project_item pi on p.project_id = pi.project_id
+left outer join item i on pi.item_id = i.item_id
+left outer join category cat on i.category_id = cat.category_id
+left outer join unit u on i.unit_id = u.unit_id
+where c.postal_code = 'L3K';

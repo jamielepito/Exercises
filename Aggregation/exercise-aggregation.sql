@@ -175,14 +175,46 @@ having total_cost > 20000;
 -- Sort by the sum desc;
 -- Expected: 18 Rows
 
+select
+	i.name,
+    sum(pi.quantity * i.price_per_unit) total_cost
+from project_item pi
+inner join item i on pi.item_id = i.item_id
+group by i.name
+order by total_cost desc;
+
 -- Across all projects, what are the total costs per item category?
 -- Select the category name and sum.
 -- Sort by the sum desc;
 -- Expected: 7 Rows
 
+select
+	i.category_id,
+    sum(i.price_per_unit * pi.quantity) total_cost
+from item i
+inner join project_item pi on i.item_id = pi.item_id
+group by i.category_id
+order by total_cost desc;
+
 -- What's the average 'Standard Labor' cost per city?
 -- Expected: 88 Rows
+
+select
+	c.city,
+	avg(i.price_per_unit * pi.quantity) total_cost
+from customer c
+left outer join project p on c.customer_id = p.customer_id
+left outer join project_item pi on p.project_id = pi.project_id
+left outer join item i on pi.item_id = i.item_id
+group by c.city;
 
 -- Challenge: Which customer has the first project of 2019?
 -- (Requires a subquery.)
 -- Expected: Starkie 2019-01-01
+
+select 
+	concat(c.first_name, " ", c.last_name) name,
+    p.start_date
+from project p
+left outer join customer c on p.customer_id = c.customer_id
+where p.start_date = (select min(start_date) from project where year(start_date) = 2019);
